@@ -41,7 +41,7 @@ Adafruit_TMP006 tmp006(0x41);
 WifiIPStack ipstack;  
 MQTT::Client<WifiIPStack, Countdown, MQTT_MAX_PACKET_SIZE> client(ipstack);
 
-#define DEBOUNCE_TIME 500
+#define DEBOUNCE_TIME 150
 const byte interruptPin = 3;
 volatile byte state = LOW;
 volatile unsigned long last_time = 0;   // time for first RISING edge 
@@ -101,7 +101,7 @@ void setup() {
 
   // Reed Switch Interrupt
   pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(interruptPin, doorOpen, RISING);
+  attachInterrupt(interruptPin, doorOpen, CHANGE );
   }
 }
 
@@ -111,14 +111,16 @@ void doorOpen() {
       
       int rc = -1;
     
-      char json[56] = "{\"d\":{\"myName\":\"TILaunchPad\",\"temperature\":";
+      char* json = "{\"DoorStatus\":0}\0";
+
+      if(digitalRead(interruptPin) == HIGH) json = "{\"DoorStatus\":1}\0";
     
-      double temp = getTemp();
+//      double temp = getTemp();
       
-      dtostrf(temp,1,2, &json[43]);
-      json[48] = '}';
-      json[49] = '}';
-      json[50] = '\0';
+//      dtostrf(temp,1,2, &json[43]);
+//      json[48] = '}';
+//      json[49] = '}';
+//      json[50] = '\0';
       Serial.print("Publishing: ");
       Serial.println(json);
       MQTT::Message message;
