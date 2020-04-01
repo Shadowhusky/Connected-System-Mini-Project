@@ -113,7 +113,15 @@ void doorOpen() {
     
       char* json = "{\"DoorStatus\":0}\0";
 
-      if(digitalRead(interruptPin) == HIGH) json = "{\"DoorStatus\":1}\0";
+      if(digitalRead(interruptPin) == HIGH)
+      {
+        //If detected movement
+        if(PIRStatus == 1) {
+          json = "{\"DoorStatus\":1, \"PIRStatus\":1}\0";
+        }else {
+          json = "{\"DoorStatus\":1, \"PIRStatus\":0}\0";
+        }
+      }
     
 //      double temp = getTemp();
       
